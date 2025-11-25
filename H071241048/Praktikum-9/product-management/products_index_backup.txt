@@ -1,0 +1,78 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4>Products</h4>
+                        <a href="{{ route('products.create') }}" class="btn btn-primary">Add New</a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <div class="mb-3">
+                        <form method="GET" action="{{ route('products.index') }}" class="form-inline">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Search products..."
+                                       value="{{ request('search') }}">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th width="200">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($products as $product)
+                                <tr>
+                                    <td>{{ $product->name }}</td>
+                                    <td>{{ $product->category ? $product->category->name : 'N/A' }}</td>
+                                    <td>Rp {{ number_format($product->price, 2, ',', '.') }}</td>
+                                    <td>
+                                        <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-info">View</a>
+                                        <a href="{{ route('products.edit', $product) }}" class="btn btn-sm btn-warning">Edit</a>
+                                        <form action="{{ route('products.destroy', $product) }}" method="POST" class="d-inline"
+                                              onsubmit="return confirm('Are you sure?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="text-center">No products found.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-center">
+                        {{ $products->links() }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
